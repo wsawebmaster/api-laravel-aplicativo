@@ -43,6 +43,20 @@ php artisan key:generate
 php artisan migrate
 ```
 
+7. Informações adicionais
+
+Criar a migration
+```
+php artisan make:migration create_name_table
+```
+```
+php artisan make:migration create_bills_table
+```
+
+Executar as migration
+```
+php artisan migrate
+```
 ## ▶️ Executando localmente
 
 ```bash
