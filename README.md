@@ -48,14 +48,29 @@ php artisan migrate
 Criar a migration
 ```
 php artisan make:migration create_name_table
-```
-```
 php artisan make:migration create_bills_table
 ```
 
 Executar as migration
 ```
 php artisan migrate
+```
+
+Criar Model
+```
+php artisan make:model NomeDaModel
+php artisan make:model Bill
+```
+
+Criar Seed
+```
+php artisan make:seeder NomeDaSeeder
+php artisan make:seeder BillSeeder
+```
+
+Executar Seed
+```
+php artisan db:seed
 ```
 ## ▶️ Executando localmente
 
