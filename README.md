@@ -37,10 +37,11 @@ php artisan key:generate
 
 5. Configure `.env` (credenciais do banco de dados, host, porta, etc.)
 
-6. Execute migrações e seeds (se houver)
+6. Execute migrações e seeds
 
 ```bash
 php artisan migrate
+php artisan db:seed
 ```
 
 7. Informações adicionais
@@ -49,11 +50,6 @@ Criar a migration
 ```
 php artisan make:migration create_name_table
 php artisan make:migration create_bills_table
-```
-
-Executar as migration
-```
-php artisan migrate
 ```
 
 Criar Model
@@ -66,12 +62,15 @@ Criar Seed
 ```
 php artisan make:seeder NomeDaSeeder
 php artisan make:seeder BillSeeder
+php artisan make:seed UserSeeder
 ```
 
-Executar Seed
+Criar Contoller
 ```
-php artisan db:seed
+php artisan make:controller Api/BillController
+php artisan make:controller Api/UserController
 ```
+
 ## ▶️ Executando localmente
 
 ```bash

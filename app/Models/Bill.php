@@ -14,4 +14,9 @@ class Bill extends Model
 
     // Indicar os campos que podem ser preenchidos em massa
     protected $fillable = ['name', 'bill_value', 'due_date'];
+
+    // Ocultar colunas específicas ao serializar o modelo
+    protected $hidden = [
+        // 'bill_value',
+    ];
 }
