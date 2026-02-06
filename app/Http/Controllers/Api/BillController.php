@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BillRequest;
 use App\Models\Bill;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -54,7 +55,7 @@ class BillController extends Controller
      * @param  \App\Http\Requests\BillRequest  $request Os dados da nova conta a ser criada, validados pelo BillRequest.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(BillRequest $request) : JsonResponse
+    public function store(BillRequest $request): JsonResponse
     {
         // Iniciar a transação
         DB::beginTransaction();
@@ -83,6 +84,74 @@ class BillController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Erro ao cadastrar a conta: '
+            ], 400);
+        }
+    }
+
+    public function update(BillRequest $request, Bill $bill)
+    {
+        // dd($request);
+        // dd($bill);
+        // Iniciar a transação
+        DB::beginTransaction();
+
+        try {
+            // Atualizar a conta no banco de dados
+            $bill->update([
+                'name' => $request->name,
+                'bill_value' => $request->bill_value,
+                'due_date' => $request->due_date
+            ]);
+            // Se tudo estiver correto, confirmar a transação
+            DB::commit();
+
+            // Retorna os dados em formato JSON e status 200 (OK)
+            return response()->json([
+                'status' => true,
+                'bill' => $bill,
+                'message' => 'Conta atualizada com sucesso!'
+            ], 200);
+        } catch (Exception $e) {
+            // Em caso de erro, reverter a transação
+            DB::rollBack();
+
+            // Retorna uma resposta JSON com status de erro e a mensagem de erro
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao atualizar a conta: '
+            ], 400);
+        }
+    }
+    /**
+     * Exclui uma conta existente.
+     *
+     * Este método exclui uma conta existente do banco de dados e retorna a conta excluída em formato JSON.
+     *
+     * @param  \App\Models\Bill  $bill O objeto da conta a ser excluída
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy(Bill $bill): JsonResponse
+    {
+        try {
+
+            // Excluir o registro do banco de dados
+            // dd($bill);
+            $bill->delete();
+
+            // Retorna os dados da conta apagada e uma mensagem de sucesso com status 200
+            return response()->json([
+                'status' => true,
+                'bill' => $bill,
+                'message' => 'Conta apagada com sucesso!'
+            ], 200);
+        } catch (Exception $e) {
+            // Operação não é concluída com êxito
+            DB::rollBack();
+
+            // Retorna uma mensagem de erro com status 400
+            return response()->json([
+                'status' => true,
+                'message' => 'Conta não apagada!'
             ], 400);
         }
     }

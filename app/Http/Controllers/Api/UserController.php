@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
@@ -45,14 +48,14 @@ class UserController extends Controller
     }
 
     /**
-     * Armazena um novo usuário no banco de dados.
+     * Cria novo usuário no banco de dados.
      *
      * Este método cria um novo usuário com os dados fornecidos na solicitação.
      *
      * @param  \App\Http\Requests\UserRequest  $request Os dados do novo usuário a ser criado, validados pelo UserRequest.
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(\App\Http\Requests\UserRequest $request): JsonResponse
+    public function store(UserRequest $request): JsonResponse
     {
         // Iniciar a transação
         DB::beginTransaction();
@@ -73,7 +76,7 @@ class UserController extends Controller
                 'user' => $user,
                 'message' => 'Usuário cadastrado com sucesso.',
             ], 201);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Em caso de erro, desfazer a transação
             DB::rollBack();
 
@@ -81,6 +84,68 @@ class UserController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Erro ao cadastrar usuário: '
+            ], 400);
+        }
+    }
+
+    public function update(UserRequest $request, User $user): JsonResponse
+    {
+        // Iniciar a transação
+        DB::beginTransaction();
+
+        try {
+            // Atualizar o usuário com os dados validados
+            $user->update([
+                'name' => $request->name,
+                'email' => $request->email,
+            ]);
+            // Se tudo estiver correto, confirmar a transação
+            DB::commit();
+
+            // Retorna os dados do usuário atualizado em formato JSON e status 200 (OK)
+            return response()->json([
+                'status' => true,
+                'user' => $user,
+                'message' => 'Usuário atualizado com sucesso.',
+            ], 200);
+        } catch (\Exception $e) {
+            // Em caso de erro, desfazer a transação
+            DB::rollBack();
+
+            // Retorna uma resposta JSON com o erro e status 500 (Internal Server Error)
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao atualizar usuário: '
+            ], 400);
+        }
+    }
+
+    /**
+     * Excluir usuário do banco de dados.
+     *
+     * @param  \App\Models\User  $user O usuário a ser excluído, injetado automaticamente pelo Laravel com base no ID da rota.
+     * @return \Illuminate\Http\JsonResponse
+     */
+        public function destroy(User $user): JsonResponse
+    {
+        try{
+
+            // Excluir o registro do banco de dados
+            $user->delete();
+
+            // Retornar os dados em formato de objeto e status 200
+            return response()->json([
+                'status' => true,
+                'user' => $user,
+                'message' => 'Usuário apagado com sucesso!',
+            ], 200);
+
+
+        } catch (Exception $e){
+            // Retornar os dados em formato de objeto e status 400
+            return response()->json([
+                'status' => false,
+                'message' => 'Usuário não apagado!',
             ], 400);
         }
     }
