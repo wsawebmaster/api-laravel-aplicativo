@@ -71,6 +71,12 @@ php artisan make:controller Api/BillController
 php artisan make:controller Api/UserController
 ```
 
+Criar Request - Validação
+```
+php artisan make:request BillRequest
+php artisan make:request UserRequest
+```
+
 ## ▶️ Executando localmente
 
 ```bash
